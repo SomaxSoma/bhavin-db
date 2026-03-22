@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2>Welcome back, {{ session.name }}</h2>
+  <p>Here's what's happening on campus today.</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card stat-lost">
+    <div class="stat-icon">📋</div>
+    <div class="stat-body">
+      <div class="stat-num">{{ stats.total_lost }}</div>
+      <div class="stat-label">Lost Reports</div>
+    </div>
+  </div>
+  <div class="stat-card stat-found">
+    <div class="stat-icon">✅</div>
+    <div class="stat-body">
+      <div class="stat-num">{{ stats.total_found }}</div>
+      <div class="stat-label">Found Reports</div>
+    </div>
+  </div>
+  <div class="stat-card stat-returned">
+    <div class="stat-icon">🎉</div>
+    <div class="stat-body">
+      <div class="stat-num">{{ stats.total_claimed }}</div>
+      <div class="stat-label">Items Returned</div>
+    </div>
+  </div>
+  <div class="stat-card stat-pending">
+    <div class="stat-icon">⏳</div>
+    <div class="stat-body">
+      <div class="stat-num">{{ stats.pending }}</div>
+      <div class="stat-label">Pending Claims</div>
+    </div>
+  </div>
+</div>
+
+<div class="action-buttons">
+  <a href="{{ url_for('report_lost') }}"  class="btn btn-danger">+ Report Lost Item</a>
+  <a href="{{ url_for('report_found') }}" class="btn btn-success">+ Report Found Item</a>
+  <a href="{{ url_for('new_claim') }}"    class="btn btn-primary">+ Submit Claim</a>
+</div>
+
+<div class="two-col">
+  <section class="card">
+    <h3 class="card-title">Recent Lost Items</h3>
+    {% if recent_lost %}
+    <table class="table">
+      <thead><tr><th>Item</th><th>Location</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for item in recent_lost %}
+      <tr>
+        <td>
+          <strong>{{ item.Item_Name }}</strong>
+          {% if item.Category_Name %}<span class="badge">{{ item.Category_Name }}</span>{% endif %}
+        </td>
+        <td>{{ item.Location or '—' }}</td>
+        <td>{{ item.Date_Lost }}</td>
+        <td><span class="status status-{{ item.Status|lower }}">{{ item.Status }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No lost items reported yet.</p>
+    {% endif %}
+    <a href="{{ url_for('lost_items') }}" class="card-link">View all →</a>
+  </section>
+
+  <section class="card">
+    <h3 class="card-title">Recent Found Items</h3>
+    {% if recent_found %}
+    <table class="table">
+      <thead><tr><th>Item</th><th>Location</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for item in recent_found %}
+      <tr>
+        <td>
+          <strong>{{ item.Item_Name }}</strong>
+          {% if item.Category_Name %}<span class="badge">{{ item.Category_Name }}</span>{% endif %}
+        </td>
+        <td>{{ item.Location or '—' }}</td>
+        <td>{{ item.Date_Found }}</td>
+        <td><span class="status status-{{ item.Status|lower }}">{{ item.Status }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No found items reported yet.</p>
+    {% endif %}
+    <a href="{{ url_for('found_items') }}" class="card-link">View all →</a>
+  </section>
+</div>
+
+{% endblock %}

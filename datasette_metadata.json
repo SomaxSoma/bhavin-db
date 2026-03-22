@@ -1,0 +1,52 @@
+{
+  "title": "Lost & Found Portal — TIET",
+  "description": "UCS310 DBMS Project Database — Bhavin Bhatti, Bhoomi Mittal, Aatish Sahu",
+  "license": "Private",
+  "databases": {
+    "lost_found": {
+      "title": "Lost & Found Database",
+      "description": "All tables for the Lost and Found Portal including Users, Items, Categories and Claims.",
+      "tables": {
+        "USER": {
+          "title": "Users",
+          "description": "Registered users (students + admin)",
+          "hidden_columns": ["Password"],
+          "sort_desc": "User_ID"
+        },
+        "LOST_ITEM": {
+          "title": "Lost Items",
+          "description": "Items reported as lost",
+          "sort_desc": "Lost_ID"
+        },
+        "FOUND_ITEM": {
+          "title": "Found Items",
+          "description": "Items that have been turned in",
+          "sort_desc": "Found_ID"
+        },
+        "CLAIM": {
+          "title": "Claims",
+          "description": "Links between lost and found items",
+          "sort_desc": "Claim_ID"
+        },
+        "CATEGORY": {
+          "title": "Categories",
+          "description": "Item categories"
+        }
+      },
+      "queries": {
+        "pending_claims": {
+          "title": "Pending Claims",
+          "sql": "SELECT c.Claim_ID, l.Item_Name as Lost_Item, f.Item_Name as Found_Item, c.Status, c.Claimed_On FROM CLAIM c JOIN LOST_ITEM l ON c.Lost_ID=l.Lost_ID JOIN FOUND_ITEM f ON c.Found_ID=f.Found_ID WHERE c.Status='Pending'"
+        },
+        "items_by_category": {
+          "title": "Items per Category",
+          "sql": "SELECT cat.Category_Name, COUNT(DISTINCT l.Lost_ID) as Lost, COUNT(DISTINCT f.Found_ID) as Found FROM CATEGORY cat LEFT JOIN LOST_ITEM l ON l.Category_ID=cat.Category_ID LEFT JOIN FOUND_ITEM f ON f.Category_ID=cat.Category_ID GROUP BY cat.Category_ID ORDER BY Lost DESC"
+        },
+        "returned_items": {
+          "title": "Returned Items",
+          "sql": "SELECT l.Item_Name as Lost_Item, f.Item_Name as Found_Item, ul.Name as Owner, c.Claimed_On FROM CLAIM c JOIN LOST_ITEM l ON c.Lost_ID=l.Lost_ID JOIN FOUND_ITEM f ON c.Found_ID=f.Found_ID JOIN USER ul ON l.User_ID=ul.User_ID WHERE c.Status='Approved'"
+        }
+      }
+    }
+  }
+}

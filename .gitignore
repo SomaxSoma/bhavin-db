@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+lost_found.db
+*.db-shm
+*.db-wal
+.env
+*.egg-info/
+dist/
+build/
+.DS_Store

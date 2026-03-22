@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}New Claim{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2>Submit a Claim</h2>
+  <p>Select a lost item and a matching found item to create a claim.</p>
+</div>
+
+<div class="form-card">
+  <form method="POST">
+    <div class="form-group">
+      <label>Lost Item <span class="req">*</span></label>
+      <select name="lost_id" id="lost_select" required onchange="fetchMatches(this.value)">
+        <option value="">-- Select a lost item --</option>
+        {% for item in lost_items %}
+        <option value="{{ item.Lost_ID }}">{{ item.Item_Name }} ({{ item.Location or 'Unknown location' }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div id="match-hint" class="match-hint" style="display:none">
+      <span class="match-icon">✨</span>
+      <span id="match-text"></span>
+    </div>
+
+    <div class="form-group">
+      <label>Found Item (matching) <span class="req">*</span></label>
+      <select name="found_id" id="found_select" required>
+        <option value="">-- Select a found item --</option>
+        {% for item in found_items %}
+        <option value="{{ item.Found_ID }}">{{ item.Item_Name }} ({{ item.Location or 'Unknown location' }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Submit Claim</button>
+      <a href="{{ url_for('claims') }}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+async function fetchMatches(lostId) {
+  const hint = document.getElementById('match-hint');
+  const text = document.getElementById('match-text');
+  const sel  = document.getElementById('found_select');
+  if (!lostId) { hint.style.display = 'none'; return; }
+
+  const res  = await fetch(`/api/match/${lostId}`);
+  const data = await res.json();
+
+  // highlight options that are likely matches
+  Array.from(sel.options).forEach(opt => opt.style.fontWeight = 'normal');
+  if (data.length > 0) {
+    const ids = data.map(d => d.Found_ID.toString());
+    Array.from(sel.options).forEach(opt => {
+      if (ids.includes(opt.value)) opt.style.fontWeight = 'bold';
+    });
+    text.textContent = `${data.length} potential match(es) found in the same category — shown in bold.`;
+    hint.style.display = 'flex';
+  } else {
+    hint.style.display = 'none';
+  }
+}
+</script>
+{% endblock %}

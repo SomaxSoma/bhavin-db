@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Claims{% endblock %}
+{% block content %}
+
+<div class="page-header row-between">
+  <div>
+    <h2>Claims</h2>
+    <p>Matched lost &amp; found items awaiting verification.</p>
+  </div>
+  <a href="{{ url_for('new_claim') }}" class="btn btn-primary">+ New Claim</a>
+</div>
+
+{% if claims %}
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Lost Item</th>
+        <th>Found Item</th>
+        <th>Lost Reporter</th>
+        <th>Found Reporter</th>
+        <th>Date</th>
+        <th>Status</th>
+        {% if session.role == 'admin' %}<th>Action</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+    {% for c in claims %}
+    <tr>
+      <td>{{ c.Claim_ID }}</td>
+      <td><strong>{{ c.Lost_Name }}</strong></td>
+      <td><strong>{{ c.Found_Name }}</strong></td>
+      <td>{{ c.Lost_Reporter }}</td>
+      <td>{{ c.Found_Reporter }}</td>
+      <td>{{ c.Claimed_On }}</td>
+      <td><span class="status status-{{ c.Status|lower }}">{{ c.Status }}</span></td>
+      {% if session.role == 'admin' %}
+      <td>
+        {% if c.Status == 'Pending' %}
+        <form method="POST" action="{{ url_for('update_claim', claim_id=c.Claim_ID) }}" style="display:inline">
+          <input type="hidden" name="status" value="Approved"/>
+          <button class="btn btn-sm btn-success">Approve</button>
+        </form>
+        <form method="POST" action="{{ url_for('update_claim', claim_id=c.Claim_ID) }}" style="display:inline">
+          <input type="hidden" name="status" value="Rejected"/>
+          <button class="btn btn-sm btn-danger">Reject</button>
+        </form>
+        {% else %}
+        <span class="text-muted">—</span>
+        {% endif %}
+      </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📝</div>
+  <h3>No claims yet</h3>
+  <p><a href="{{ url_for('new_claim') }}">Submit a claim</a> to match a lost and found item.</p>
+</div>
+{% endif %}
+
+{% endblock %}

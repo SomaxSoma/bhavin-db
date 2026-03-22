@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2>Admin Panel</h2>
+  <p>Manage users, categories, and view system statistics.</p>
+</div>
+
+<div class="two-col">
+  <section class="card">
+    <h3 class="card-title">Registered Users</h3>
+    <table class="table">
+      <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th></tr></thead>
+      <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.User_ID }}</td>
+        <td>{{ u.Name }}</td>
+        <td>{{ u.Email }}</td>
+        <td>{{ u.Phone or '—' }}</td>
+        <td><span class="badge {% if u.Role=='admin' %}badge-admin{% endif %}">{{ u.Role }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h3 class="card-title">Items by Category</h3>
+    <table class="table">
+      <thead><tr><th>Category</th><th>Lost</th><th>Found</th></tr></thead>
+      <tbody>
+      {% for row in cat_stats %}
+      <tr>
+        <td>{{ row.Category_Name }}</td>
+        <td>{{ row.lost_count }}</td>
+        <td>{{ row.found_count }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<div class="card mt">
+  <h3 class="card-title">Datasette — Raw Database View</h3>
+  <p>Explore the underlying SQLite database directly using Datasette.</p>
+  <a href="http://localhost:8001" target="_blank" class="btn btn-outline">Open Datasette →</a>
+</div>
+
+{% endblock %}

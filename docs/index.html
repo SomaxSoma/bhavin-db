@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Lost & Found Portal — TIET DBMS Project</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #c0392b;
+      --red-light: #e74c3c;
+      --green: #27ae60;
+      --blue: #2980b9;
+      --dark: #1a1a2e;
+      --card-bg: #ffffff;
+      --gray: #6c757d;
+      --light: #f8f9fa;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--light);
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(26,26,46,.95);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 2rem;
+    }
+    .nav-brand { color: #fff; font-weight: 800; font-size: 1.1rem; text-decoration: none; display: flex; align-items: center; gap: .5rem; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: rgba(255,255,255,.8); text-decoration: none; font-size: .9rem; transition: color .2s; }
+    .nav-links a:hover { color: #fff; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #c0392b 100%);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-content { position: relative; max-width: 800px; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      color: rgba(255,255,255,.9);
+      padding: .4rem 1rem;
+      border-radius: 999px;
+      font-size: .82rem;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      color: #fff;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .hero h1 span { color: #ff6b6b; }
+    .hero p {
+      color: rgba(255,255,255,.8);
+      font-size: 1.15rem;
+      max-width: 580px;
+      margin: 0 auto 2rem;
+    }
+    .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .75rem 1.75rem;
+      border-radius: 10px;
+      font-size: .95rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all .2s;
+      border: 2px solid transparent;
+    }
+    .btn-primary { background: var(--red); color: #fff; border-color: var(--red); }
+    .btn-primary:hover { background: #a93226; }
+    .btn-outline { background: transparent; color: #fff; border-color: rgba(255,255,255,.5); }
+    .btn-outline:hover { background: rgba(255,255,255,.1); }
+
+    .hero-stats {
+      display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+      margin-top: 3rem;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .num { color: #fff; font-size: 2rem; font-weight: 900; }
+    .hero-stat .lbl { color: rgba(255,255,255,.6); font-size: .82rem; text-transform: uppercase; letter-spacing: .5px; }
+
+    /* SECTION */
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      display: inline-block;
+      background: #fdecea;
+      color: var(--red);
+      padding: .3rem .9rem;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: .75rem;
+    }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: .5rem; color: var(--dark); }
+    .subtitle { color: var(--gray); margin-bottom: 3rem; font-size: 1.05rem; }
+
+    /* FEATURES */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 1.75rem;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+      border: 1px solid rgba(0,0,0,.06);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,.12); }
+    .feature-icon { font-size: 2.2rem; margin-bottom: .9rem; }
+    .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; }
+    .feature-card p { color: var(--gray); font-size: .9rem; }
+
+    /* DB SCHEMA */
+    .schema-section { background: var(--dark); color: #fff; }
+    .schema-section h2 { color: #fff; }
+    .schema-section .subtitle { color: rgba(255,255,255,.6); }
+    .tables-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .table-card {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .table-card h4 {
+      color: #ff6b6b;
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: .75rem;
+      font-weight: 700;
+    }
+    .field {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .3rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      font-size: .83rem;
+    }
+    .field:last-child { border: none; }
+    .field-name { color: rgba(255,255,255,.9); font-weight: 600; }
+    .field-type { color: rgba(255,255,255,.4); font-size: .75rem; }
+    .pk  { background: #f9a825; color: #000; padding: .1rem .35rem; border-radius: 4px; font-size: .65rem; font-weight: 800; }
+    .fk  { background: #1565c0; color: #fff; padding: .1rem .35rem; border-radius: 4px; font-size: .65rem; font-weight: 800; }
+
+    /* TECH STACK */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+    .stack-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    .stack-icon { font-size: 2.4rem; margin-bottom: .6rem; }
+    .stack-card h4 { font-size: .95rem; font-weight: 700; margin-bottom: .2rem; }
+    .stack-card p { font-size: .78rem; color: var(--gray); }
+
+    /* SQL SNIPPET */
+    .sql-section { background: #0d1117; }
+    .sql-section h2 { color: #fff; }
+    .sql-section .subtitle { color: rgba(255,255,255,.5); }
+    .sql-section .section-label { background: rgba(255,107,107,.15); color: #ff6b6b; }
+    .code-tabs { display: flex; gap: .5rem; margin-bottom: 0; flex-wrap: wrap; }
+    .tab-btn {
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.6);
+      border: 1px solid rgba(255,255,255,.1);
+      padding: .45rem 1rem;
+      border-radius: 8px 8px 0 0;
+      font-size: .82rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .15s;
+    }
+    .tab-btn.active { background: #1e2736; color: #fff; border-color: rgba(255,255,255,.2); }
+    .code-block {
+      background: #1e2736;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 0 12px 12px 12px;
+      padding: 1.75rem;
+      overflow-x: auto;
+      display: none;
+    }
+    .code-block.active { display: block; }
+    pre { font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: .83rem; line-height: 1.7; }
+    .kw  { color: #ff7b72; }
+    .fn  { color: #d2a8ff; }
+    .str { color: #a5d6ff; }
+    .cm  { color: #8b949e; font-style: italic; }
+    .num { color: #79c0ff; }
+
+    /* TEAM */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) { .team-grid { grid-template-columns: 1fr; } }
+    .team-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 16px rgba(0,0,0,.08);
+    }
+    .team-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), #8e44ad);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.75rem;
+      margin: 0 auto 1rem;
+    }
+    .team-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: .25rem; }
+    .team-card .roll { color: var(--gray); font-size: .82rem; }
+
+    /* FOOTER */
+    footer {
+      background: var(--dark);
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 2rem;
+      font-size: .85rem;
+    }
+    footer a { color: rgba(255,255,255,.7); }
+
+    @media (max-width: 768px) {
+      nav { padding: .75rem 1rem; }
+      .nav-links { display: none; }
+      section { padding: 3.5rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">🔍 Lost &amp; Found</a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#schema">Database</a>
+    <a href="#sql">SQL</a>
+    <a href="#stack">Stack</a>
+    <a href="#team">Team</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">UCS310 — DBMS Project · 2025–26</div>
+    <h1>Lost &amp; Found<br/><span>Portal</span></h1>
+    <p>A centralized, database-driven system to manage and track lost and found items across Thapar Institute of Engineering &amp; Technology.</p>
+    <div class="hero-cta">
+      <a href="https://github.com/SomaxSoma/bhavin-db" class="btn btn-primary">View on GitHub</a>
+      <a href="#features" class="btn btn-outline">Explore Features ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">5</div><div class="lbl">Tables</div></div>
+      <div class="hero-stat"><div class="num">3NF</div><div class="lbl">Normalised</div></div>
+      <div class="hero-stat"><div class="num">2</div><div class="lbl">Triggers</div></div>
+      <div class="hero-stat"><div class="num">3</div><div class="lbl">Stored Procs</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <h2>What the portal does</h2>
+    <p class="subtitle">A full backend-focused solution with SQL, PL/SQL triggers, and a live Flask web interface.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>User Authentication</h3>
+        <p>Secure registration and login with SHA-256 password hashing. Role-based access for users and admins.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Report Lost Items</h3>
+        <p>Students report lost items with name, category, date, and location. Records are instantly stored in the database.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✅</div>
+        <h3>Report Found Items</h3>
+        <p>Found items are logged by any user. The system checks for potential matches by category automatically.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <h3>Claim Matching</h3>
+        <p>Users submit claims linking a lost item to a found item. An API endpoint suggests matches from the same category.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>SQL Triggers</h3>
+        <p>Two database triggers auto-update item statuses when claims are created or approved — no manual updates needed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Admin Panel</h3>
+        <p>Admins approve or reject claims, view all users, and see item statistics broken down by category.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Search &amp; Filter</h3>
+        <p>Full-text search across item names, descriptions, and locations. Filter by any of the 8 categories.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Datasette Viewer</h3>
+        <p>Raw SQLite database browsable via Datasette with saved SQL queries for reports and analytics.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DB SCHEMA -->
+<section id="schema" class="schema-section">
+  <div class="container">
+    <div class="section-label" style="background:rgba(255,107,107,.15);color:#ff6b6b">Database Design</div>
+    <h2>Relational Schema</h2>
+    <p class="subtitle">Normalised to 3NF/BCNF — no partial or transitive dependencies.</p>
+    <div class="tables-grid">
+      <div class="table-card">
+        <h4>USER</h4>
+        <div class="field"><span class="pk">PK</span><span class="field-name">User_ID</span><span class="field-type">INTEGER</span></div>
+        <div class="field"><span class="field-name">Name</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Email</span><span class="field-type">TEXT UNIQUE</span></div>
+        <div class="field"><span class="field-name">Phone</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Password</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Role</span><span class="field-type">user|admin</span></div>
+      </div>
+      <div class="table-card">
+        <h4>CATEGORY</h4>
+        <div class="field"><span class="pk">PK</span><span class="field-name">Category_ID</span><span class="field-type">INTEGER</span></div>
+        <div class="field"><span class="field-name">Category_Name</span><span class="field-type">TEXT</span></div>
+      </div>
+      <div class="table-card">
+        <h4>LOST_ITEM</h4>
+        <div class="field"><span class="pk">PK</span><span class="field-name">Lost_ID</span><span class="field-type">INTEGER</span></div>
+        <div class="field"><span class="field-name">Item_Name</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Description</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Date_Lost</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Location</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Status</span><span class="field-type">Lost|Matched|Returned</span></div>
+        <div class="field"><span class="fk">FK</span><span class="field-name">User_ID</span><span class="field-type">→ USER</span></div>
+        <div class="field"><span class="fk">FK</span><span class="field-name">Category_ID</span><span class="field-type">→ CATEGORY</span></div>
+      </div>
+      <div class="table-card">
+        <h4>FOUND_ITEM</h4>
+        <div class="field"><span class="pk">PK</span><span class="field-name">Found_ID</span><span class="field-type">INTEGER</span></div>
+        <div class="field"><span class="field-name">Item_Name</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Description</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Date_Found</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Location</span><span class="field-type">TEXT</span></div>
+        <div class="field"><span class="field-name">Status</span><span class="field-type">Unclaimed|Claimed|Returned</span></div>
+        <div class="field"><span class="fk">FK</span><span class="field-name">User_ID</span><span class="field-type">→ USER</span></div>
+        <div class="field"><span class="fk">FK</span><span class="field-name">Category_ID</span><span class="field-type">→ CATEGORY</span></div>
+      </div>
+      <div class="table-card">
+        <h4>CLAIM</h4>
+        <div class="field"><span class="pk">PK</span><span class="field-name">Claim_ID</span><span class="field-type">INTEGER</span></div>
+        <div class="field"><span class="fk">FK</span><span class="field-name">Lost_ID</span><span class="field-type">→ LOST_ITEM</span></div>
+        <div class="field"><span class="fk">FK</span><span class="field-name">Found_ID</span><span class="field-type">→ FOUND_ITEM</span></div>
+        <div class="field"><span class="field-name">Status</span><span class="field-type">Pending|Approved|Rejected</span></div>
+        <div class="field"><span class="field-name">Claimed_On</span><span class="field-type">TEXT</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SQL SNIPPETS -->
+<section id="sql" class="sql-section">
+  <div class="container">
+    <div class="section-label">Implementation</div>
+    <h2 style="color:#fff">SQL &amp; PL/SQL</h2>
+    <p class="subtitle">Key queries, triggers, and stored procedures powering the portal.</p>
+    <div class="code-tabs">
+      <button class="tab-btn active" onclick="showTab('ddl')">DDL — Schema</button>
+      <button class="tab-btn" onclick="showTab('trigger')">Triggers</button>
+      <button class="tab-btn" onclick="showTab('match')">Match Query</button>
+      <button class="tab-btn" onclick="showTab('proc')">Stored Proc</button>
+    </div>
+    <div id="ddl" class="code-block active"><pre><span class="cm">-- Create normalised tables with constraints</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">LOST_ITEM</span> (
+    Lost_ID     <span class="kw">INTEGER PRIMARY KEY AUTOINCREMENT</span>,
+    Item_Name   <span class="kw">TEXT NOT NULL</span>,
+    Description <span class="kw">TEXT</span>,
+    Date_Lost   <span class="kw">TEXT NOT NULL</span>,
+    Location    <span class="kw">TEXT</span>,
+    Status      <span class="kw">TEXT NOT NULL DEFAULT</span> <span class="str">'Lost'</span>
+                <span class="kw">CHECK</span>(Status <span class="kw">IN</span> (<span class="str">'Lost'</span>,<span class="str">'Matched'</span>,<span class="str">'Returned'</span>)),
+    User_ID     <span class="kw">INTEGER NOT NULL</span>,
+    Category_ID <span class="kw">INTEGER</span>,
+    <span class="kw">FOREIGN KEY</span> (User_ID)     <span class="kw">REFERENCES</span> USER(User_ID),
+    <span class="kw">FOREIGN KEY</span> (Category_ID) <span class="kw">REFERENCES</span> CATEGORY(Category_ID)
+);</pre></div>
+    <div id="trigger" class="code-block"><pre><span class="cm">-- Trigger 1: Mark items Matched/Claimed when a claim is submitted</span>
+<span class="kw">CREATE TRIGGER</span> <span class="fn">trg_claim_pending</span>
+<span class="kw">AFTER INSERT ON</span> CLAIM
+<span class="kw">BEGIN</span>
+    <span class="kw">UPDATE</span> LOST_ITEM  <span class="kw">SET</span> Status = <span class="str">'Matched'</span>
+        <span class="kw">WHERE</span> Lost_ID  = NEW.Lost_ID;
+    <span class="kw">UPDATE</span> FOUND_ITEM <span class="kw">SET</span> Status = <span class="str">'Claimed'</span>
+        <span class="kw">WHERE</span> Found_ID = NEW.Found_ID;
+<span class="kw">END</span>;
+
+<span class="cm">-- Trigger 2: Mark both items Returned when claim is Approved</span>
+<span class="kw">CREATE TRIGGER</span> <span class="fn">trg_claim_approved</span>
+<span class="kw">AFTER UPDATE OF</span> Status <span class="kw">ON</span> CLAIM
+<span class="kw">WHEN</span> NEW.Status = <span class="str">'Approved'</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">UPDATE</span> LOST_ITEM  <span class="kw">SET</span> Status = <span class="str">'Returned'</span>
+        <span class="kw">WHERE</span> Lost_ID  = NEW.Lost_ID;
+    <span class="kw">UPDATE</span> FOUND_ITEM <span class="kw">SET</span> Status = <span class="str">'Returned'</span>
+        <span class="kw">WHERE</span> Found_ID = NEW.Found_ID;
+<span class="kw">END</span>;</pre></div>
+    <div id="match" class="code-block"><pre><span class="cm">-- Find potential matches for a lost item (same category)</span>
+<span class="kw">SELECT</span>
+    f.Found_ID,
+    f.Item_Name,
+    f.Description,
+    f.Date_Found,
+    f.Location,
+    c.Category_Name,
+    u.Name <span class="kw">AS</span> Found_By
+<span class="kw">FROM</span> FOUND_ITEM f
+<span class="kw">LEFT JOIN</span> CATEGORY c <span class="kw">ON</span> f.Category_ID = c.Category_ID
+<span class="kw">JOIN</span>      USER u      <span class="kw">ON</span> f.User_ID     = u.User_ID
+<span class="kw">WHERE</span>
+    f.Category_ID = (
+        <span class="kw">SELECT</span> Category_ID <span class="kw">FROM</span> LOST_ITEM
+        <span class="kw">WHERE</span> Lost_ID = <span class="num">:lost_id</span>
+    )
+    <span class="kw">AND</span> f.Status = <span class="str">'Unclaimed'</span>
+<span class="kw">ORDER BY</span> f.Date_Found <span class="kw">DESC</span>;</pre></div>
+    <div id="proc" class="code-block"><pre><span class="cm">-- Stored procedure: Add a new lost item (PL/SQL style)</span>
+<span class="kw">CREATE PROCEDURE</span> <span class="fn">Add_Lost_Item</span> (
+    p_item_name   <span class="kw">TEXT</span>,
+    p_description <span class="kw">TEXT</span>,
+    p_date_lost   <span class="kw">TEXT</span>,
+    p_location    <span class="kw">TEXT</span>,
+    p_user_id     <span class="kw">INTEGER</span>,
+    p_category_id <span class="kw">INTEGER</span>
+)
+<span class="kw">BEGIN</span>
+    <span class="cm">-- Validate user exists</span>
+    <span class="kw">IF NOT EXISTS</span> (
+        <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> USER <span class="kw">WHERE</span> User_ID = p_user_id
+    ) <span class="kw">THEN</span>
+        <span class="fn">SIGNAL</span> SQLSTATE <span class="str">'45000'</span>
+            <span class="kw">SET</span> MESSAGE_TEXT = <span class="str">'Invalid user ID'</span>;
+    <span class="kw">END IF</span>;
+
+    <span class="kw">INSERT INTO</span> LOST_ITEM
+        (Item_Name, Description, Date_Lost, Location, User_ID, Category_ID)
+    <span class="kw">VALUES</span>
+        (p_item_name, p_description, p_date_lost, p_location,
+         p_user_id, p_category_id);
+<span class="kw">END</span>;</pre></div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="stack">
+  <div class="container">
+    <div class="section-label">Technology</div>
+    <h2>Tech Stack</h2>
+    <p class="subtitle">Backend-focused with a clean web interface for demonstration.</p>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-icon">🗄️</div>
+        <h4>SQLite</h4>
+        <p>Lightweight relational DB with full SQL support &amp; triggers</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🐍</div>
+        <h4>Python / Flask</h4>
+        <p>Web framework serving the portal frontend &amp; REST API</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">📊</div>
+        <h4>Datasette</h4>
+        <p>Browse raw DB tables, run saved SQL queries</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🎨</div>
+        <h4>HTML / CSS / JS</h4>
+        <p>Custom responsive frontend — no frameworks needed</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🔒</div>
+        <h4>SHA-256 Auth</h4>
+        <p>Password hashing with session-based authentication</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">⚡</div>
+        <h4>SQL Triggers</h4>
+        <p>Automatic status updates on claim events</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team" style="background:#fff">
+  <div class="container" style="text-align:center">
+    <div class="section-label">Our Team</div>
+    <h2>Group Members</h2>
+    <p class="subtitle">B.Tech 2nd Year — Thapar Institute of Engineering &amp; Technology</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">🧑‍💻</div>
+        <h4>Bhavin Bhatti</h4>
+        <div class="roll">1024030811</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">👩‍💻</div>
+        <h4>Bhoomi Mittal</h4>
+        <div class="roll">1024030814</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">🧑‍💻</div>
+        <h4>Aatish Kumar Sahu</h4>
+        <div class="roll">10240307</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Lost &amp; Found Portal &bull; UCS310 – Database Management Systems &bull; Thapar Institute &bull; 2025–26</p>
+  <p style="margin-top:.5rem"><a href="https://github.com/SomaxSoma/bhavin-db">GitHub Repository</a></p>
+</footer>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.code-block').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

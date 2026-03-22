@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Report Found Item{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2>Report a Found Item</h2>
+  <p>Help someone get their belongings back — fill in the details below.</p>
+</div>
+
+<div class="form-card">
+  <form method="POST">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Item Name <span class="req">*</span></label>
+        <input type="text" name="item_name" placeholder="e.g. Student ID Card" required autofocus/>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select name="category_id">
+          <option value="">-- Select Category --</option>
+          {% for c in cats %}
+          <option value="{{ c.Category_ID }}">{{ c.Category_Name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" rows="3" placeholder="Any identifying details…"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date Found <span class="req">*</span></label>
+        <input type="date" name="date_found" required/>
+      </div>
+      <div class="form-group">
+        <label>Location Found</label>
+        <input type="text" name="location" placeholder="e.g. Cafeteria, Sports Complex…"/>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-success">Submit Report</button>
+      <a href="{{ url_for('found_items') }}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

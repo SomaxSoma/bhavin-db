@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Register — Lost &amp; Found</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body class="auth-page">
+<div class="auth-card">
+  <div class="auth-header">
+    <div class="auth-logo">🔍</div>
+    <h1>Create Account</h1>
+    <p>Lost &amp; Found Portal — TIET</p>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" class="auth-form">
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" name="name" placeholder="Your full name" required autofocus/>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" name="email" placeholder="you@tiet.edu" required/>
+    </div>
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" name="phone" placeholder="10-digit mobile number"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Choose a password" required/>
+    </div>
+    <button type="submit" class="btn btn-primary btn-full">Register</button>
+  </form>
+
+  <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+</div>
+</body>
+</html>

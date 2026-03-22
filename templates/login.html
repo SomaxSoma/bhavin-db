@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Login — Lost &amp; Found</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body class="auth-page">
+<div class="auth-card">
+  <div class="auth-header">
+    <div class="auth-logo">🔍</div>
+    <h1>Lost &amp; Found Portal</h1>
+    <p>Thapar Institute of Engineering &amp; Technology</p>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" class="auth-form">
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" name="email" placeholder="you@tiet.edu" required autofocus/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required/>
+    </div>
+    <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+  </form>
+
+  <p class="auth-link">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+
+  <div class="demo-creds">
+    <p><strong>Demo credentials:</strong></p>
+    <code>admin@tiet.edu / admin123</code><br/>
+    <code>bhavin@tiet.edu / bhavin123</code>
+  </div>
+</div>
+</body>
+</html>

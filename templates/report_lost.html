@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Report Lost Item{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2>Report a Lost Item</h2>
+  <p>Fill in the details below to register your lost item.</p>
+</div>
+
+<div class="form-card">
+  <form method="POST">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Item Name <span class="req">*</span></label>
+        <input type="text" name="item_name" placeholder="e.g. Blue JBL Earphones" required autofocus/>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select name="category_id">
+          <option value="">-- Select Category --</option>
+          {% for c in cats %}
+          <option value="{{ c.Category_ID }}">{{ c.Category_Name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" rows="3" placeholder="Colour, brand, distinguishing marks…"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date Lost <span class="req">*</span></label>
+        <input type="date" name="date_lost" required/>
+      </div>
+      <div class="form-group">
+        <label>Last Known Location</label>
+        <input type="text" name="location" placeholder="e.g. Main Library, Cafeteria…"/>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-danger">Submit Report</button>
+      <a href="{{ url_for('lost_items') }}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
